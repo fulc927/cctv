@@ -7,7 +7,7 @@
    [kernel,
     stdlib,
     turtle,
-    gen_smtp
+    gen_smtp,
 ranch
    ]},
   {env,[
