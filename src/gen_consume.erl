@@ -27,7 +27,7 @@ Self = self(),
 		%RENVOI la PJ a l'exp√diteur c'est le principe de fonctionnement
 		{ok,[{relay, Relay}, {username, Username}, {password, Password}]} = application:get_env(cctv, smtp_credentials),
 		gen_smtp_client:send({ReplyTo, [ReplyTo],
- 		"Subject: testing\r\nFrom: eb \r\nTo: Some Dude \r\n\r\nThis is the email body"},
+ 		"Subject: videosurveillance Souriettes\r\nFrom: Raspberry pi \r\nTo: you my dear \r\n\r\nCdlt"},
   		[{relay, Relay}, {username, Username}, {password, Password}]),
 
 		Self ! {Key, ContentType, Payload},
