@@ -15,11 +15,12 @@ init([]) ->
 %% want terminate/2 to be called when the application
 %% is stopped
 process_flag(trap_exit, true),
-io:format("~p starting~n",[?MODULE]),
+%io:format("Gen_consume is ~p starting~n",[?MODULE]),
 
 Self = self(),
-	F = fun(Key, ContentType, Payload, _State) ->
+	F = fun(Key, ContentType, Payload, Header, _State) ->
 		io:format("Key ~p ~n",[Key]),
+		io:format("Header ~p ~n",[Header]),
 		io:format("Contentype ~p ~n",[ContentType]),
 		io:format("Payload ~p ~n",[Payload]),
 		Self ! {Key, ContentType, Payload},
@@ -27,9 +28,7 @@ Self = self(),
 	end,
 InitState = #{},
 Declarations = application:get_env(cctv, consume_declarations),
-        io:format("~p ~n",[Declarations]),
      {_, Dcls} = Declarations,
-        io:format("~p ~n",[Dcls]),
 Amqp = #{
   name => local_service,
   connection => amqp_server,
@@ -38,14 +37,14 @@ Amqp = #{
   handle_info => fun gen_consume:handle_info/2,
   init_state => InitState,
   subscriber_count => 1,
-            prefetch_count => 10,
+  prefetch_count => 1,
+  passive => true,
   consume_queue => <<"incoming_seb">>,
   declarations => Dcls
 		  
        },
-io:format("the AMQPPoolChildSpec in consume ~p ~n",[Amqp]),
+%io:format("the AMQPPoolChildSpec in consume ~p ~n",[Amqp]),
 {ok, _ServicePid} = turtle_service:start_link(Amqp),
-%{ok, _ServicePid} = turtle_service:child_spec(Amqp),
 
 {ok, 0}.
 
@@ -54,7 +53,7 @@ handle_call({pub, Thing}, _From, N) -> 	{reply, ok, N+1}.
 handle_cast({pub2, Thing2}, N) -> {noreply, N}.
 
 handle_info(_Info, N) -> 
-	io:format("display N ~p ~n",[N]),
+	io:format("gen_consume handle_info N ~p ~n",[N]),
 	{noreply, N}.
 
 terminate(_Reason, _N) ->

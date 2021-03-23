@@ -18,9 +18,7 @@ start_link() ->
 init([]) ->
 
 Declarations2 = application:get_env(cctv, publish_declarations),
-        io:format("~p ~n",[Declarations2]),
         {_, Dcls2} = Declarations2,
-        io:format("~p ~n",[Dcls2]),
 
 
     A = [#{id => my_publisher,
@@ -32,6 +30,6 @@ Declarations2 = application:get_env(cctv, publish_declarations),
 	   type => worker,
            module => [turtle_publisher]}],
 
-io:format("the AMQPPoolChildSpec in publish ~p ~n",[A]),
+%io:format("the AMQPPoolChildSpec in publish ~p ~n",[A]),
 
     {ok, {{one_for_one, 3, 10}, A}}.

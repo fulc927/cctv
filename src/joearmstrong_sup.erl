@@ -7,7 +7,6 @@
 
 -behaviour(supervisor).
 
-%-export([start/0,start_in_shell_for_testing/0]).
 
 -export([start_link/0]).
 
@@ -16,11 +15,6 @@
 -include_lib("amqp_client/include/amqp_client.hrl").
 
 -define(SERVER, ?MODULE).
-
-%start() ->
-%	spawn(fun() -> supervisor:start_link({local,?SERVER}, ?MODULE, _Arg = [])end).
-%start_in_shell_for_testing() -> 
-%	{ok, Pid} = supervisor:start_link({local,?SERVER}, ?MODULE, _Arg = []), unlink(Pid).
 
 start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
