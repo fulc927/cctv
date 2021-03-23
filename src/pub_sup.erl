@@ -17,21 +17,21 @@ start_link() ->
 
 init([]) ->
 
-
-%AMQPPoolChildSpec = turtle_publisher:child_spec(Type, ConnName, AMQPDecls, #{ confirms =>false}),
-%                  supervisor:start_child(turtle_sup, AMQPPoolChildSpec),
+Declarations2 = application:get_env(cctv, publish_declarations),
+        io:format("~p ~n",[Declarations2]),
+        {_, Dcls2} = Declarations2,
+        io:format("~p ~n",[Dcls2]),
 
 
     A = [#{id => my_publisher,
-	   start => {turtle_publisher , start_link ,[my_publisher,
-						     amqp_server,
-						     [{'exchange.declare',0,<<"email-out">>,<<"topic">>,false,false,false,false,false,[]},{'queue.declare',0,<<"outgoing_email">>,true,false,false,false,false,[]},{'queue.bind',0,<<"outgoing_email">>, <<"email-out">>, <<"sebastien.brice@opentelecom.fr">>,false, []}],
-						     #{confirms => false}]},
+	   start => {turtle_publisher , 
+		     start_link ,[my_publisher,amqp_server,Dcls2,
+		     #{confirms => false}]},
            restart => permanent,
 	   shutdown => 5000,
 	   type => worker,
            module => [turtle_publisher]}],
 
-io:format("le AMQPPoolChildSpec ~p ~n",[A]),
+io:format("the AMQPPoolChildSpec in publish ~p ~n",[A]),
 
     {ok, {{one_for_one, 3, 10}, A}}.
