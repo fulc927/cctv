@@ -76,9 +76,10 @@ Reply = ok,
 %% @end
 %%--------------------------------------------------------------------
 handle_cast({pub,[]}, State) ->
+	{ok, {_,[{exchange,Exch},{email,Addr}]}} = application:get_env(cctv, uploader_alert),
 	turtle:publish(my_publisher,
-        <<"email-out">>,
-        <<"sebastien.brice@opentelecom.fr">>,
+        Exch,
+        Addr,	
         <<"text/json">>,
         <<"aueauieauinnrtnrtnrtnt">>,
         #{ delivery_mode => persistent }),

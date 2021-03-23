@@ -26,7 +26,11 @@ Self = self(),
 		ack
 	end,
 InitState = #{},
-Seb = #{
+Declarations = application:get_env(cctv, consume_declarations),
+        io:format("~p ~n",[Declarations]),
+     {_, Dcls} = Declarations,
+        io:format("~p ~n",[Dcls]),
+Amqp = #{
   name => local_service,
   connection => amqp_server,
   function => F,
@@ -36,11 +40,12 @@ Seb = #{
   subscriber_count => 1,
             prefetch_count => 10,
   consume_queue => <<"incoming_seb">>,
-  declarations => [#'exchange.declare' { exchange = <<"email-in">>, type = <<"topic">>, durable = true }, #'queue.declare' { queue = <<"incoming_seb">>}, #'queue.bind' { queue = <<"incoming_seb">>, exchange = <<"email-in">>, routing_key = <<"seb@otp.fr.eu.org">> }
-		  ]
+  declarations => Dcls
+		  
        },
-{ok, _ServicePid} = turtle_service:start_link(Seb),
-%{ok, _ServicePid} = turtle_service:child_spec(Seb),
+io:format("the AMQPPoolChildSpec in consume ~p ~n",[Amqp]),
+{ok, _ServicePid} = turtle_service:start_link(Amqp),
+%{ok, _ServicePid} = turtle_service:child_spec(Amqp),
 
 {ok, 0}.
 
@@ -49,7 +54,7 @@ handle_call({pub, Thing}, _From, N) -> 	{reply, ok, N+1}.
 handle_cast({pub2, Thing2}, N) -> {noreply, N}.
 
 handle_info(_Info, N) -> 
-	io:format("PAYE ton N ~p ~n",[N]),
+	io:format("display N ~p ~n",[N]),
 	{noreply, N}.
 
 terminate(_Reason, _N) ->
