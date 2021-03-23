@@ -19,10 +19,17 @@ process_flag(trap_exit, true),
 
 Self = self(),
 	F = fun(Key, ContentType, Payload, Header, _State) ->
-		io:format("Key ~p ~n",[Key]),
 		io:format("Header ~p ~n",[Header]),
-		io:format("Contentype ~p ~n",[ContentType]),
-		io:format("Payload ~p ~n",[Payload]),
+		[{<<"From">>,longstr,ReplyTo}] = Header,
+		
+		io:format("display Replyto ~p ~n",[ReplyTo]),
+		io:format("ReplyTo ~p ~n",[binary_to_list(ReplyTo)]),
+		%RENVOI la PJ a l'exp√diteur c'est le principe de fonctionnement
+		{ok,[{relay, Relay}, {username, Username}, {password, Password}]} = application:get_env(cctv, smtp_credentials),
+		gen_smtp_client:send({ReplyTo, [ReplyTo],
+ 		"Subject: testing\r\nFrom: eb \r\nTo: Some Dude \r\n\r\nThis is the email body"},
+  		[{relay, Relay}, {username, Username}, {password, Password}]),
+
 		Self ! {Key, ContentType, Payload},
 		ack
 	end,

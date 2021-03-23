@@ -76,7 +76,9 @@ Reply = ok,
 %% @end
 %%--------------------------------------------------------------------
 handle_cast({pub,[]}, State) ->
-	{ok, {_,[{exchange,Exch},{email,Addr}]}} = application:get_env(cctv, uploader_alert),
+	{ok, [{exchange,Exch},{email,Addr}]} = application:get_env(cctv, uploader_alert),
+	io:format("UPLODAER display Exch ~p ~n",[Exch]),
+	io:format("UPLODAER display Addr ~p ~n",[Addr]),
 	turtle:publish(my_publisher,
         Exch,
         Addr,	
